@@ -3,6 +3,42 @@ from bs4 import BeautifulSoup as bs
 import pandas as pd
 import pickle
 
+def load_cosine_df():
+  return load_pickle('C:/Users/Hi/Desktop/CB(movie)/data/similarity/cosine_sim_df_1.pickle')
+
+def get_CB_recomm(df1:"pd.DataFrame", df2:"pd.DataFrame", title_id:str):
+  """CB 기반 추천 알고리즘
+
+  Args:
+      df1 (pd.DataFrame): title_basic_df
+      df2 (pd.DataFrame): cosine_df
+      title_id (str): title id
+  """
+  print(f"about : {find_title(df1, title_id)}")
+
+  candidate_series = df2[title_id].sort_values(ascending=False)[1:10]
+  
+  for title_id, sim in zip(candidate_series.index, candidate_series):
+    title = find_title(df1, title_id)
+    url = f'https://www.imdb.com/title/{title_id}/?ref_=fn_al_tt_1'
+    print(f"title: {title} / sim: {sim:.4f} / url: {url}")
+
+def load_title_basic_df() -> "pd.DataFrame":
+  return load_pickle('C:/Users/Hi/Desktop/CB(movie)/data/IMDb_Non-Commercial_Datasets/title_basic.pickle')
+
+def find_title(df:"pd.DataFrame", title_id:str) -> str:
+  """convert title id to name
+
+  Args:
+      df (pd.DataFrame): title_basic_df
+      title_id (str): title_id
+
+  Returns:
+      str: title
+  """
+  return df.loc[title_id, 'primaryTitle']
+
+
 # 결과 저장하기.
 def save_result_to_pickle(path, result):
   with open(path, 'wb') as handle:
